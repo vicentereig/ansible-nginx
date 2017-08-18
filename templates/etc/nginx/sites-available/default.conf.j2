@@ -103,7 +103,17 @@ server {
 {% if item.custom_root_location_try_files %}
     try_files {{ item.custom_root_location_try_files }};
 {% else %}
-    try_files $uri $uri.html $uri/{{ (' @' + item.upstreams[0].name) if (item.upstreams) else '' }}  =404;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_redirect off;
+
+    if ( $http_accept ~* "application\/vnd.api\+json" ) {
+        proxy_pass http://{{ upstream.name }};
+    }
+
+    try_files $uri $uri.html $uri/ =404;
 {% endif %}
 {% if item.basic_auth | bool %}
     auth_basic "{{ item.basic_auth_message }}";
