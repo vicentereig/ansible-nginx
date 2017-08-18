@@ -124,8 +124,11 @@ server {
     {{ setting }};
 {% endfor %}
 {% endif %}
-    proxy_pass http://{{ upstream.name }};
+    if ( $http_accept_header ~ "application/vnd.api+json" ) {
+      proxy_pass http://{{ upstream.name }};
+    }
   }
 {% endfor %}
 {% endif %}
 }
+
