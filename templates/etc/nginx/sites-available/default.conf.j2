@@ -110,7 +110,7 @@ server {
     proxy_redirect off;
 
     if ( $http_accept ~* "application\/vnd.api\+json" ) {
-        proxy_pass http://{{ upstream.name }};
+        proxy_pass http://{{ item.upstreams[0].name }};
     }
 
     try_files $uri $uri.html $uri/ =404;
