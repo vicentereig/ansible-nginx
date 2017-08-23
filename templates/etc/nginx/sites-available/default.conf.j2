@@ -48,6 +48,8 @@ server {
 {% endfor %}
 {% endif %}
 
+  # error_log /var/log/nginx/error.log debug;
+
   ssl_protocols {{ item.ssl.protocols }};
   ssl_ciphers "{{ item.ssl.ciphers }}";
   ssl_prefer_server_ciphers {{ item.ssl.prefer_server_ciphers }};
@@ -113,7 +115,7 @@ server {
         proxy_pass http://{{ item.upstreams[0].name }};
     }
 
-    try_files $uri $uri.html $uri/ =404;
+    try_files $uri $uri/ /index.html =404;
 {% endif %}
 {% if item.basic_auth | bool %}
     auth_basic "{{ item.basic_auth_message }}";
