@@ -101,6 +101,17 @@ server {
     log_not_found off;
   }
 
+  {% for location in upstream_locations %}
+  location {{location}} {
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Host $http_host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_redirect off;
+      proxy_pass http://{{ item.upstreams[0].name }};
+  }
+  {% endfor %}
+
   location / {
 {% if item.custom_root_location_try_files %}
     try_files {{ item.custom_root_location_try_files }};
